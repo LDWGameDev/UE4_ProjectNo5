@@ -7,10 +7,14 @@
 #include "PlayerController_PlayerBase.generated.h"
 
 
+class USettingsManager;
+
+
 /**
  * 
  */
-UCLASS()
+
+UCLASS(Abstract)
 class PROJECTNO5_API APlayerController_PlayerBase : public APlayerController
 {
 	GENERATED_BODY()
@@ -19,12 +23,31 @@ class PROJECTNO5_API APlayerController_PlayerBase : public APlayerController
 /**
  * Functions
  */
+
 public:
 	APlayerController_PlayerBase();
+
 protected:
+	virtual void BeginPlay();
 	virtual void SetupInputComponent() override;
 
 	virtual void BindInputAxis_MoveUp(float p_Value);
 	virtual void BindInputAxis_MoveRight(float p_Value);
+	virtual void BindInputAxis_MiddleMouseScroll(float p_Value);
+
 private:
+
+
+
+/**
+ * Properties
+ */
+
+public:
+
+protected:
+	UPROPERTY()
+		USettingsManager* m_SettingManagerREF;
+private:
+
 };

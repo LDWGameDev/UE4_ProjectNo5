@@ -2,7 +2,9 @@
 
 
 #include "PlayerController/PlayerController_PlayerGameplay.h"
-#include "Character/Player/Character_PlayerBase.h"
+
+#include "Characters/Character/Player/Character_PlayerBase.h"
+#include "System/Settings/SettingsManager.h"
 
 
 /**
@@ -16,14 +18,35 @@ APlayerController_PlayerGameplay::APlayerController_PlayerGameplay()
 
 
 
+
 /**
  * Override functions
  */
+
+void APlayerController_PlayerGameplay::BeginPlay()
+{
+	Super::BeginPlay();
+	bShowMouseCursor = true;
+}
 
 void APlayerController_PlayerGameplay::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 }
+
+void APlayerController_PlayerGameplay::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+	m_ControlledCharacterPlayerBaseREF = Cast<ACharacter_PlayerBase>(InPawn);
+}
+
+void APlayerController_PlayerGameplay::OnUnPossess()
+{
+	Super::OnUnPossess();
+	m_ControlledCharacterPlayerBaseREF = nullptr;
+}
+
+
 
 
 
@@ -33,22 +56,28 @@ void APlayerController_PlayerGameplay::SetupInputComponent()
 
 void APlayerController_PlayerGameplay::BindInputAxis_MoveUp(float p_Value)
 {
-	Super::BindInputAxis_MoveUp(p_Value);
-
-	ACharacter_PlayerBase* CharPlayerBase = Cast<ACharacter_PlayerBase>(GetPawn());
-	if (CharPlayerBase != nullptr)
+	if (p_Value == 0.0f) return;
+	if (m_ControlledCharacterPlayerBaseREF != nullptr)
 	{
-		CharPlayerBase->HandleInputAxis_MoveUp(p_Value);
+		m_ControlledCharacterPlayerBaseREF->HandleInputAxis_MoveUp(p_Value);
 	}
 }
 
 void APlayerController_PlayerGameplay::BindInputAxis_MoveRight(float p_Value)
 {
-	Super::BindInputAxis_MoveRight(p_Value);
-
-	ACharacter_PlayerBase* CharPlayerBase = Cast<ACharacter_PlayerBase>(GetPawn());
-	if (CharPlayerBase != nullptr)
+	if (p_Value == 0.0f) return;
+	if (m_ControlledCharacterPlayerBaseREF != nullptr)
 	{
-		CharPlayerBase->HandleInputAxis_MoveRight(p_Value);
+		m_ControlledCharacterPlayerBaseREF->HandleInputAxis_MoveRight(p_Value);
+	}
+}
+
+void APlayerController_PlayerGameplay::BindInputAxis_MiddleMouseScroll(float p_Value)
+{
+	if (p_Value == 0.0f) return;
+	// Checks conditions for being in gameplay or not. If not, like in option menu for example, not execute the code below
+	if (m_SettingManagerREF != nullptr)
+	{
+		m_SettingManagerREF->UpdateSettingValue_CameraDistance(p_Value);
 	}
 }
